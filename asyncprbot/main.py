@@ -1,7 +1,9 @@
 import os
 import sys
+
 from anthropic import Anthropic
 from dotenv import load_dotenv
+
 
 def main():
     load_dotenv()
