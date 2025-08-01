@@ -4,6 +4,8 @@ import sys
 from anthropic import Anthropic
 from dotenv import load_dotenv
 
+from asyncprbot.asyncprbot import AsyncPrBot
+
 
 def main():
     load_dotenv()
@@ -15,31 +17,32 @@ def main():
         sys.exit(1)
 
     try:
-        client = Anthropic(
-            api_key=api_key
-        )
+        client = Anthropic(api_key=api_key)
 
-        user_messages = [
-            "Hello, Claude!"
-        ]
+        bot = AsyncPrBot(client)
 
-        message = client.messages.create(
-            model="claude-opus-4-20250514",
-            max_tokens=100,
-            messages=[
-                {
-                    "role": "user",
-                    "content": user_messages[0]
-                }
-            ]
-        )
+        calculator_code = """
+        def add(a, b):
+            return a + b
 
-        print("Connected to Claude!")
-        print("You said: ", user_messages[0])
-        print("Claude says: ", message.content[0].text)
-    
+        def subtract(a, b):
+            return a - b
+
+        print("Calculator ready!")
+        print("5 + 3 =", add(5, 3))
+        print("10 - 4 =", subtract(10, 4))
+        """
+
+        instructions = """Add a multiply function that takes two parameters and returns their product. Also add a print
+        statement that demonstrates the multiply function with 4 and 6."""
+
+        modified_code = bot.work_on_ticket(file_content=calculator_code, instructions=instructions)
+
+        print(modified_code)
+
     except Exception as e:
         print(f"Error connecting to Claude API: {e}")
+
 
 if __name__ == "__main__":
     main()
